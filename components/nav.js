@@ -1,96 +1,35 @@
 "use client";
 
-import { Fragment, useEffect, useState, useRef } from "react";
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  Popover,
-  PopoverButton,
-  PopoverGroup,
-  PopoverPanel,
-  Tab,
-  TabGroup,
-  TabList,
-  TabPanel,
-  TabPanels,
-} from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import { FaTwitter, FaFacebook, FaInstagram, FaPinterest } from "react-icons/fa";
 import { getServicesNav } from "../services/services";
 import { searchContent } from "../services/search";
 
 export default function Navigation() {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [showResults, setShowResults] = useState(false);
+  const [services, setServices] = useState([]);
   const searchRef = useRef(null);
-  const [navigation, setNavigation] = useState({
-    categories: [
-      {
-        id: "categories",
-        name: "Услуги",
-        featured: [],
-        services: [],
-      },
-    ],
-    pages: [
-      { name: "Начало", href: "/" },
-      { name: "Екип", href: "/team" },
-      { name: "Блог", href: "/blog" },
-      { name: "Контакти", href: "/contact" },
-    ],
-  });
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Services", href: "/services" },
+    { name: "Blog", href: "/blog" },
+    { name: "Team", href: "/team" },
+    { name: "Contact", href: "/contact" },
+  ];
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const services = await getServicesNav();
-
-        if (!services || !Array.isArray(services) || services.length === 0) {
-          console.warn("No services found from API");
-          return;
-        }
-
-        const featured = services.slice(0, 2);
-        const remainingServices = services.slice(2);
-
-        setNavigation((prev) => ({
-          ...prev,
-          categories: [
-            {
-              id: "categories",
-              name: "Услуги",
-              featured: featured.map((service) => ({
-                name: service.title.rendered,
-                href: `/services/${service.slug}`,
-                imageSrc:
-                  service.yoast_head_json?.og_image?.[0]?.url ||
-                  "/placeholder.webp",
-                imageAlt: service.title.rendered,
-              })),
-              services: remainingServices.map((service) => ({
-                id: service.id,
-                name: service.title.rendered,
-                href: `/services/${service.slug}`,
-              })),
-            },
-          ],
-        }));
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching navigation data:", error);
-      }
-    };
-
-    fetchData();
+    getServicesNav().then((data) => {
+      if (Array.isArray(data)) setServices(data);
+    });
   }, []);
 
   useEffect(() => {
@@ -98,319 +37,268 @@ export default function Navigation() {
       setSearchResults([]);
       return;
     }
-
-    console.log(searchQuery);
-
     setIsSearching(true);
-    setShowResults(true);
-
-    const delayDebounceFn = setTimeout(async () => {
+    const t = setTimeout(async () => {
       const results = await searchContent(searchQuery);
-      setSearchResults(results);
+      setSearchResults(results || []);
       setIsSearching(false);
     }, 300);
-
-    return () => clearTimeout(delayDebounceFn);
+    return () => clearTimeout(t);
   }, [searchQuery]);
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setShowResults(false);
+    const handler = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setSearchOpen(false);
+        setSearchQuery("");
       }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
     };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   return (
-    <div className="bg-white sticky shadow-md top-0 block w-full z-50">
-      {/* Mobile menu */}
-      <Dialog open={open} onClose={setOpen} className="relative z-40 lg:hidden">
-        <DialogBackdrop
-          transition
-          className="fixed inset-0 bg-black/25 transition-opacity duration-300 ease-linear data-closed:opacity-0"
-        />
-        <div className="fixed inset-0 z-40 flex">
-          <DialogPanel
-            transition
-            className="relative flex w-full max-w-xs transform flex-col overflow-y-auto bg-white pb-12 shadow-xl transition duration-300 ease-in-out data-closed:-translate-x-full"
-          >
-            <div className="flex px-4 pt-5 pb-2">
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
-              >
-                <span className="absolute -inset-0.5" />
-                <span className="sr-only">Close menu</span>
-                <XMarkIcon aria-hidden="true" className="size-6" />
-              </button>
-              <div className="ml-4">
-                <Image
-                  src="/next-level-logo.png"
-                  alt=""
-                  width={180}
-                  height={40}
-                  className="h-10 w-auto"
-                />
-              </div>
+    <>
+      {/* ── TOP BAR ── */}
+      <div className="bg-[#1d2228] text-white text-sm hidden md:block">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-10">
+          <div className="flex items-center gap-6">
+            <span className="flex items-center gap-1.5 text-gray-300">
+              <svg className="w-3.5 h-3.5 text-[#f5a523] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+              </svg>
+              info@flexa-luxe.com
+            </span>
+            <span className="flex items-center gap-1.5 text-gray-300">
+              <svg className="w-3.5 h-3.5 text-[#f5a523] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+              </svg>
+              Korunní 2569/108, 101 00 Prague 10
+            </span>
+          </div>
+          <div className="flex items-center gap-5">
+            <div className="flex items-center gap-1 text-gray-400 text-xs">
+              <Link href="/contact" className="hover:text-[#f5a523] transition-colors">Help</Link>
+              <span className="text-gray-600 mx-1">/</span>
+              <Link href="/contact" className="hover:text-[#f5a523] transition-colors">Support</Link>
+              <span className="text-gray-600 mx-1">/</span>
+              <Link href="/contact" className="hover:text-[#f5a523] transition-colors">Contact</Link>
             </div>
-            {/* Links */}
-            <TabGroup className="mt-2">
-              <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                {navigation.pages.map((page) => (
-                  <div key={page.name} className="flow-root">
-                    <Link
-                      href={page.href}
-                      className="-m-2 block p-2 font-medium text-gray-900"
-                      onClick={() => setOpen(false)}
-                      prefetch={true}
-                    >
-                      {page.name}
-                    </Link>
-                  </div>
-                ))}
-              </div>
-              <div className="border-b border-gray-200">
-                <TabList className="-mb-px flex space-x-8 px-4">
-                  {navigation.categories.map((category) => (
-                    <Tab
-                      key={category.name}
-                      className="flex-1 border-b-2 border-transparent px-1 py-4 text-xl font-bold text-center text-gray-900 hover:text-[#129160] data-headlessui-state-selected:border-[#129160] data-headlessui-state-selected:text-[#129160]"
-                    >
-                      {category.name}
-                    </Tab>
-                  ))}
-                </TabList>
-              </div>
-              {/* Loader */}
-              {loading && (
-                <div className="flex justify-center py-10">
-                  <div className="w-12 h-12 border-4 border-gray-500 border-t-[#129160] rounded-full animate-spin"></div>
-                </div>
-              )}
-              {!loading && (
-                <TabPanels as={Fragment}>
-                  {navigation.categories.map((category) => (
-                    <TabPanel
-                      key={category.name}
-                      className="space-y-6 px-4 pt-6 pb-8"
-                    >
-                      <ul className="flex flex-col space-y-4">
-                        {[...category.featured, ...category.services].map(
-                          (service) => (
-                            <li
-                              key={service.id || service.name}
-                              className="flow-root"
-                            >
-                              <Link
-                                href={service.href}
-                                className="-m-2 block p-2 font-medium text-gray-900"
-                                onClick={() => setOpen(false)}
-                                prefetch={true}
-                              >
-                                {service.name}
-                              </Link>
-                            </li>
-                          )
-                        )}
-                      </ul>
-                    </TabPanel>
-                  ))}
-                </TabPanels>
-              )}
-            </TabGroup>
-          </DialogPanel>
+            <div className="flex items-center gap-2.5 text-gray-500">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#f5a523] transition-colors"><FaTwitter size={12} /></a>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#f5a523] transition-colors"><FaFacebook size={12} /></a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#f5a523] transition-colors"><FaInstagram size={12} /></a>
+              <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#f5a523] transition-colors"><FaPinterest size={12} /></a>
+            </div>
+          </div>
         </div>
-      </Dialog>
-      <header className="relative bg-white">
-        <nav aria-label="Top" className="mx-auto w-full px-4 sm:px-6 lg:px-8">
-          <div className="border-b border-gray-200">
-            <div className="flex items-center justify-between h-16 lg:h-16">
-              {/* Mobile menu button - запазваме мобилната версия непроменена */}
-              <button
-                type="button"
-                onClick={() => setOpen(true)}
-                className="relative rounded-md bg-white p-2 text-gray-400 lg:hidden"
-              >
-                <span className="absolute -inset-0.5" />
-                <span className="sr-only">Open menu</span>
-                <Bars3Icon aria-hidden="true" className="size-6" />
-              </button>
+      </div>
 
-              {/* Секция 1: Лого */}
-              <div className="w-1/4 lg:w-1/5 flex items-center justify-start">
-                <Link href="/" className="block">
-                  <span className="sr-only">NextLevel Theme</span>
-                  <Image
-                    width={180}
-                    height={40}
-                    alt=""
-                    src="/next-level-logo.png"
-                    className="w-auto transition-all duration-300 ease-in-out"
-                  />
+      {/* ── MAIN NAV ── */}
+      <nav className="bg-white shadow-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-[70px]">
+
+            {/* Logo */}
+            <Link href="/" className="flex-shrink-0">
+              <Image
+                src="/FlexaLuxe-logo.svg"
+                alt="FlexaLuxe"
+                width={170}
+                height={38}
+                priority
+                className="h-9 w-auto"
+              />
+            </Link>
+
+            {/* Desktop nav links */}
+            <div className="hidden lg:flex items-center gap-7">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="text-[#1d2228] font-medium text-sm hover:text-[#f5a523] transition-colors"
+                >
+                  {link.name}
                 </Link>
-              </div>
-
-              {/* Секция 2: Меню - центрирано */}
-              <div className="hidden lg:flex lg:items-center lg:justify-center lg:flex-1">
-                <PopoverGroup className="flex">
-                  <div className="flex space-x-8">
-                    {navigation.pages.map((page) => (
-                      <Link
-                        key={page.name}
-                        href={page.href}
-                        className="flex items-center font-medium text-gray-700 hover:text-gray-800 text-base"
-                        prefetch={true}
-                      >
-                        {page.name}
-                      </Link>
-                    ))}
-                    {navigation.categories.map((category) => (
-                      <Popover key={category.name} className="flex">
-                        {({ open, close }) => (
-                          <>
-                            <div className="relative flex">
-                              <PopoverButton className="relative z-10 -mb-px flex items-center border-b-2 border-transparent pt-px font-medium text-gray-700 transition-colors duration-200 ease-out hover:text-gray-800 data-open:border-[#129160] data-open:text-[#129160] cursor-pointer focus-visible:outline-none transition-all text-base">
-                                {category.name}
-                                <ChevronDownIcon
-                                  className={`ml-2 h-5 w-5 text-gray-500 transition-transform duration-200 ease-in-out ${
-                                    open ? "rotate-180" : "rotate-0"
-                                  }`}
-                                />
-                              </PopoverButton>
-                            </div>
-                            <PopoverPanel
-                              transition
-                              className="absolute inset-x-0 top-full text-sm text-gray-500 transition data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-150 data-leave:ease-in"
-                            >
-                              <div
-                                aria-hidden="true"
-                                className="absolute inset-0 top-1/2 bg-white shadow-sm"
-                              />
-                              <div className="relative bg-white">
-                                <div className="mx-auto max-w-7xl px-8">
-                                  {/* Loader */}
-                                  {loading && (
-                                    <div className="flex justify-center py-10">
-                                      <div className="w-12 h-12 border-4 border-gray-500 border-t-[#129160] rounded-full animate-spin"></div>
-                                    </div>
-                                  )}
-                                  {!loading && (
-                                    <div className="grid grid-cols-2 gap-x-8 gap-y-10 py-6">
-                                      <div className="col-start-2">
-                                        <div className="group relative text-base sm:text-sm">
-                                          <Image
-                                            width={560}
-                                            height={560}
-                                            alt=""
-                                            src="/menu-hero-image.jpg"
-                                            className="w-full rounded-lg bg-gray-100 object-cover group-hover:opacity-75"
-                                          />
-                                        </div>
-                                      </div>
-                                      <ul className="text-lg divide-y divide-gray-100 start-1 row-start-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6">
-                                        {[
-                                          ...category.featured,
-                                          ...category.services,
-                                        ].map((service) => (
-                                          <li
-                                            key={service.id || service.name}
-                                            className="flex gap-x-4 py-1 items-center"
-                                          >
-                                            <Link
-                                              className="min-w-0 w-full flex"
-                                              href={service.href}
-                                              prefetch={true}
-                                              onClick={close}
-                                            >
-                                              <p className="text-lg font-semibold text-gray-900 transition-colors duration-300 hover:text-[#129160]">
-                                                {service.name}
-                                              </p>
-                                            </Link>
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </PopoverPanel>
-                          </>
-                        )}
-                      </Popover>
-                    ))}
-                  </div>
-                </PopoverGroup>
-              </div>
-
-              {/* Секция 3: Търсачка */}
-              <div
-                ref={searchRef}
-                className="flex justify-end w-40 sm:w-44 lg:w-1/6"
-              >
-                <div className="relative w-full lg:w-72">
-                  <input
-                    type="text"
-                    placeholder="Търсене..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setShowResults(true);
-                    }}
-                    onFocus={() => {
-                      if (searchQuery.length >= 3) {
-                        setShowResults(true);
-                      }
-                    }}
-                    className="block w-full px-3 pr-10 text-gray-900 placeholder:text-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#129160] py-1 text-sm sm:text-base lg:text-base"
-                  />
-                  <MagnifyingGlassIcon className="absolute right-2 top-1/2 text-gray-500 -translate-y-1/2 h-5 w-5" />
+              ))}
+              {services.length > 0 && (
+                <div className="relative">
+                  <button
+                    onClick={() => setServicesOpen(!servicesOpen)}
+                    className="flex items-center gap-1 text-[#1d2228] font-medium text-sm hover:text-[#f5a523] transition-colors cursor-pointer"
+                  >
+                    All Services
+                    <ChevronDownIcon
+                      className={`h-3.5 w-3.5 transition-transform duration-200 ${servicesOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  {servicesOpen && (
+                    <div className="absolute top-full left-0 mt-2 w-60 bg-white shadow-xl rounded-sm py-2 z-50 border border-gray-100">
+                      {services.map((s) => (
+                        <Link
+                          key={s.id}
+                          href={`/services/${s.slug}`}
+                          className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-[#f5a523] hover:text-white transition-colors"
+                          onClick={() => setServicesOpen(false)}
+                        >
+                          {s.title.rendered}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                {showResults && (
-                  <div className="absolute right-0 w-44 sm:w-48 lg:w-72 mt-2 bg-white shadow-lg rounded-md max-h-48 sm:max-h-56 lg:max-h-60 overflow-y-auto border border-gray-200">
-                    {isSearching ? (
-                      <div className="p-2 text-gray-500 text-sm text-center">
-                        Зареждане...
-                      </div>
-                    ) : searchResults.length > 0 ? (
-                      <ul className="divide-y divide-gray-200">
-                        {searchResults.map((result) => (
-                          <li
-                            key={result.id}
-                            className="p-1 sm:p-2 hover:bg-gray-100"
-                            onClick={() => {
-                              setSearchQuery("");
-                              setSearchResults([]);
-                              setShowResults(false);
-                            }}
-                          >
+              )}
+            </div>
+
+            {/* Right side: search + phone + CTA */}
+            <div className="hidden lg:flex items-center gap-5">
+              {/* Search */}
+              <div ref={searchRef} className="relative">
+                <button
+                  onClick={() => setSearchOpen(!searchOpen)}
+                  className="text-[#1d2228] hover:text-[#f5a523] transition-colors p-1"
+                  aria-label="Search"
+                >
+                  <MagnifyingGlassIcon className="h-5 w-5" />
+                </button>
+                {searchOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-72 z-50">
+                    <input
+                      type="text"
+                      autoFocus
+                      placeholder="Search..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-sm shadow-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f5a523]"
+                    />
+                    {searchQuery.length >= 3 && (
+                      <div className="mt-1 bg-white rounded-sm shadow-lg border border-gray-100 max-h-60 overflow-y-auto">
+                        {isSearching ? (
+                          <div className="p-3 text-center text-sm text-gray-500">Searching...</div>
+                        ) : searchResults.length > 0 ? (
+                          searchResults.map((r) => (
                             <Link
-                              href={`/${result.type}/${result.slug}`}
-                              className="block w-full h-full p-1 sm:p-2 text-gray-900 hover:text-[#129160]"
-                              prefetch={true}
+                              key={r.id}
+                              href={`/${r.type}/${r.slug}`}
+                              className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-50 last:border-0"
+                              onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
                             >
-                              {result.title}
+                              {r.title}
                             </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <div className="p-2 text-gray-500 text-sm text-center">
-                        Няма намерени резултати
+                          ))
+                        ) : (
+                          <div className="p-3 text-center text-sm text-gray-500">No results found</div>
+                        )}
                       </div>
                     )}
                   </div>
                 )}
               </div>
+
+              {/* Phone */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full border-2 border-[#f5a523] flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-[#f5a523]" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                  </svg>
+                </div>
+                <div className="leading-tight">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wide">Call Anytime</p>
+                  <p className="text-sm font-bold text-[#1d2228]">+420 216 916 22</p>
+                </div>
+              </div>
+
+              {/* CTA Button */}
+              <Link
+                href="/contact"
+                className="bg-[#f5a523] text-white font-semibold px-5 py-2.5 text-sm hover:bg-[#e09415] transition-colors uppercase tracking-wide rounded-sm whitespace-nowrap"
+              >
+                Get Solution
+              </Link>
+            </div>
+
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="lg:hidden p-2 text-[#1d2228] hover:text-[#f5a523] transition-colors"
+              aria-label="Open menu"
+            >
+              <Bars3Icon className="h-6 w-6" />
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* ── MOBILE MENU DRAWER ── */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-[100] lg:hidden">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setMobileOpen(false)}
+          />
+          <div className="absolute left-0 top-0 bottom-0 w-[300px] bg-white flex flex-col overflow-y-auto shadow-2xl">
+            {/* Drawer header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-100">
+              <Image src="/FlexaLuxe-logo.svg" alt="FlexaLuxe" width={140} height={32} className="h-8 w-auto" />
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="p-1.5 text-gray-400 hover:text-[#f5a523] transition-colors rounded"
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Nav links */}
+            <div className="flex-1 py-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center px-5 py-3 text-[#1d2228] font-medium hover:text-[#f5a523] hover:bg-orange-50 transition-colors border-b border-gray-50 text-sm"
+                >
+                  {link.name}
+                </Link>
+              ))}
+              {services.length > 0 && (
+                <>
+                  <div className="px-5 py-2 text-xs uppercase tracking-widest text-gray-400 mt-2">Services</div>
+                  {services.map((s) => (
+                    <Link
+                      key={s.id}
+                      href={`/services/${s.slug}`}
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center px-5 py-2.5 text-gray-600 hover:text-[#f5a523] hover:bg-orange-50 transition-colors border-b border-gray-50 text-sm"
+                    >
+                      {s.title.rendered}
+                    </Link>
+                  ))}
+                </>
+              )}
+            </div>
+
+            {/* Drawer footer */}
+            <div className="p-5 border-t border-gray-100 space-y-3 bg-gray-50">
+              <p className="text-xs text-gray-500 flex items-center gap-2">
+                <svg className="w-3.5 h-3.5 text-[#f5a523]" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+                info@flexa-luxe.com
+              </p>
+              <Link
+                href="/contact"
+                onClick={() => setMobileOpen(false)}
+                className="block bg-[#f5a523] text-white text-center font-semibold py-3 rounded-sm text-sm hover:bg-[#e09415] transition-colors uppercase tracking-wide"
+              >
+                Get Solution
+              </Link>
             </div>
           </div>
-        </nav>
-      </header>
-    </div>
+        </div>
+      )}
+    </>
   );
 }

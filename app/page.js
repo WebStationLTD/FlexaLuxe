@@ -2,55 +2,50 @@ import HeroSection from "../components/hero";
 import { WebVitals } from "./web-vitals";
 import dynamic from "next/dynamic";
 
-// Динамично зареждане на компоненти с lazy loading
-const Incentives = dynamic(() => import("../components/incentives"), {
-  ssr: true,
-});
-const Team = dynamic(() => import("../components/team"), { ssr: true });
-const CTA = dynamic(() => import("../components/cta"), { ssr: true });
-const Clients = dynamic(() => import("../components/clients"), { ssr: true });
-const Newsletter = dynamic(() => import("../components/newsletter"), {
-  ssr: true,
-});
-const Testimonial = dynamic(() => import("../components/testimonial"), {
-  ssr: true,
-});
-const Lastestposts = dynamic(() => import("../components/latestposts"), {
-  ssr: true,
-});
+const MarqueeSection = dynamic(() => import("../components/MarqueeSection"), { ssr: true });
+const AboutSection = dynamic(() => import("../components/AboutSection"), { ssr: true });
+const ServicesSection = dynamic(() => import("../components/ServicesSection"), { ssr: true });
+const StatsSection = dynamic(() => import("../components/StatsSection"), { ssr: true });
+const Partners = dynamic(() => import("../components/clients"), { ssr: true });
+const TestimonialsSection = dynamic(() => import("../components/TestimonialsSection"), { ssr: true });
+const WhatWeOffer = dynamic(() => import("../components/WhatWeOffer"), { ssr: true });
+const LatestPosts = dynamic(() => import("../components/latestposts"), { ssr: true });
+const MapCTA = dynamic(() => import("../components/MapCTA"), { ssr: true });
 
-// Добавяне на ISR ревалидиране на всеки час
 export const revalidate = 3600;
 
-// Добавяне на метаданни за главната страница
 export const metadata = {
-  title: "NextLevel Services - Професионални бизнес услуги",
+  title: "Flexa-luxe s.r.o. — Industrial Technology Solutions",
   description:
-    "Открийте нашите висококачествени бизнес услуги, които ще изведат вашия бизнес на следващо ниво. Консултирайте се с нашите експерти днес.",
+    "Flexa-luxe s.r.o. is an international company based in Prague, specializing in advanced technological solutions for the industrial sector — industrial robotics, automation, and UV disinfection systems.",
   keywords: [
-    "бизнес услуги",
-    "консултации",
-    "професионални услуги",
-    "NextLevel",
+    "industrial robotics",
+    "building automation",
+    "UV disinfection",
+    "UVC lamps",
+    "industrial technology",
+    "Prague",
+    "Flexa-luxe",
   ],
   openGraph: {
-    title: "NextLevel Services - Професионални бизнес услуги",
-    description: "Открийте нашите висококачествени бизнес услуги",
+    title: "Flexa-luxe s.r.o. — Industrial Technology Solutions",
+    description:
+      "Advanced technological solutions for the industrial sector — robotics, automation, and UV disinfection systems.",
     images: [
       {
         url: "/hero-image-desktop.jpg",
         width: 1200,
         height: 630,
-        alt: "NextLevel Services",
+        alt: "Flexa-luxe Industrial Technology",
       },
     ],
-    locale: "bg_BG",
+    locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NextLevel Services - Професионални бизнес услуги",
-    description: "Открийте нашите висококачествени бизнес услуги",
+    title: "Flexa-luxe s.r.o. — Industrial Technology Solutions",
+    description: "Advanced industrial technology solutions from Prague.",
     images: ["/hero-image-desktop.jpg"],
   },
 };
@@ -60,13 +55,15 @@ export default function Home() {
     <>
       <WebVitals />
       <HeroSection />
-      <Incentives />
-      <Team />
-      <CTA />
-      <Clients />
-      <Newsletter />
-      <Testimonial />
-      <Lastestposts />
+      <MarqueeSection />
+      <AboutSection />
+      <ServicesSection />
+      <StatsSection />
+      <Partners />
+      <TestimonialsSection />
+      <WhatWeOffer />
+      <LatestPosts />
+      <MapCTA />
     </>
   );
 }

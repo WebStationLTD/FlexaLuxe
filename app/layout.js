@@ -28,25 +28,25 @@ export async function generateMetadata() {
   return {
     metadataBase: new URL(`${protocol}://${host}`),
     title: {
-      template: "%s | NextLevel Services",
-      default: "NextLevel Services | Професионални бизнес услуги",
+      template: "%s | Flexa-luxe s.r.o.",
+      default: "Flexa-luxe s.r.o. | Industrial Technology Solutions",
     },
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "Flexa-luxe s.r.o. is an international company based in Prague, specializing in advanced technological solutions for the industrial sector — robotics, automation, and UV disinfection.",
     openGraph: {
-      title: "NextLevel Services | Професионални бизнес услуги",
+      title: "Flexa-luxe s.r.o. | Industrial Technology Solutions",
       description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      images: "/lawyer.webp",
+        "Advanced technological solutions for the industrial sector — robotics, automation, and UV disinfection.",
+      images: "/hero-image-desktop.jpg",
       type: "website",
-      locale: "bg_BG",
-      siteName: "NextLevel Services",
+      locale: "en_US",
+      siteName: "Flexa-luxe s.r.o.",
     },
     twitter: {
       card: "summary_large_image",
-      title: "NextLevel Services",
-      description: "Lorem ipsum dolor sit amet",
-      images: ["/lawyer.webp"],
+      title: "Flexa-luxe s.r.o.",
+      description: "Advanced industrial technology solutions from Prague.",
+      images: ["/hero-image-desktop.jpg"],
     },
     robots: {
       index: true,
@@ -59,18 +59,18 @@ export async function generateMetadata() {
         "max-snippet": -1,
       },
     },
-    alternates: {
-      canonical: "/",
-      languages: {
-        bg: "/",
+      alternates: {
+        canonical: "/",
+        languages: {
+          en: "/",
+        },
       },
-    },
   };
 }
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="bg">
+    <html lang="en">
       <head>
         <CriticalCSS />
         <link
@@ -100,7 +100,7 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body className={roboto.className}>
-        <NextTopLoader showSpinner={false} color="#129160"/>
+        <NextTopLoader showSpinner={false} color="#f5a523" />
         <BackToTop />
         <CallButton />
         <ImagePreloader />
@@ -115,22 +115,20 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "LegalService",
-              name: "Lorem ipsum dolor sit amet",
+              "@type": "Organization",
+              name: "Flexa-luxe s.r.o.",
               description:
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-              url: "https://example.bg",
-              contactPoint: {
-                "@type": "ContactPoint",
-                telephone: "+359XXXXXXXXX",
-                contactType: "customer service",
-              },
+                "International company based in Prague specializing in advanced technological solutions for the industrial sector — industrial robotics, automation, and UV/UVC disinfection systems.",
+              url: "https://flexa-luxe.com",
+              email: "info@flexa-luxe.com",
+              identifier: "216 91 622",
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "Example Street 123",
-                addressLocality: "София",
-                postalCode: "1000",
-                addressCountry: "BG",
+                streetAddress: "Korunní 2569/108",
+                addressLocality: "Prague",
+                addressRegion: "Vinohrady",
+                postalCode: "101 00",
+                addressCountry: "CZ",
               },
             }),
           }}

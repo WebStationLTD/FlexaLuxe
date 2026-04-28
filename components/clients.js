@@ -1,82 +1,72 @@
-import Image from "next/image";
+const partners = [
+  {
+    name: "Siemens",
+    svg: (
+      <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" className="h-8 w-auto">
+        <text x="10" y="28" fontFamily="Arial, sans-serif" fontSize="22" fontWeight="bold" fill="currentColor">SIEMENS</text>
+      </svg>
+    ),
+  },
+  {
+    name: "ABB",
+    svg: (
+      <svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" className="h-8 w-auto">
+        <rect x="0" y="5" width="30" height="30" rx="2" fill="currentColor" />
+        <text x="5" y="26" fontFamily="Arial, sans-serif" fontSize="18" fontWeight="bold" fill="white">AB</text>
+        <text x="36" y="26" fontFamily="Arial, sans-serif" fontSize="22" fontWeight="bold" fill="currentColor">ABB</text>
+      </svg>
+    ),
+  },
+  {
+    name: "Philips",
+    svg: (
+      <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" className="h-8 w-auto">
+        <circle cx="10" cy="20" r="6" fill="currentColor" />
+        <circle cx="24" cy="20" r="6" fill="currentColor" />
+        <circle cx="38" cy="20" r="6" fill="currentColor" />
+        <text x="50" y="26" fontFamily="Arial, sans-serif" fontSize="20" fontWeight="bold" fill="currentColor">PHILIPS</text>
+      </svg>
+    ),
+  },
+  {
+    name: "Osram",
+    svg: (
+      <svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg" className="h-8 w-auto">
+        <text x="5" y="28" fontFamily="Arial, sans-serif" fontSize="22" fontWeight="bold" fill="currentColor">OSRAM</text>
+      </svg>
+    ),
+  },
+  {
+    name: "Bosch",
+    svg: (
+      <svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg" className="h-8 w-auto">
+        <circle cx="18" cy="20" r="16" fill="currentColor" />
+        <text x="8" y="26" fontFamily="Arial, sans-serif" fontSize="14" fontWeight="bold" fill="white">B</text>
+        <text x="38" y="27" fontFamily="Arial, sans-serif" fontSize="20" fontWeight="bold" fill="currentColor">BOSCH</text>
+      </svg>
+    ),
+  },
+];
 
-export default function Clients() {
+export default function Partners() {
   return (
-    <div className="bg-white py-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid grid-cols-1 items-center gap-x-8 gap-y-16 lg:grid-cols-2">
-          <div className="mx-auto w-full max-w-xl lg:mx-0">
-            <h2 className="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
-              Lorem ipsum
-            </h2>
-            <p className="mt-6 text-lg/8 text-gray-600">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
-          </div>
-          <div className="mx-auto grid w-full max-w-xl grid-cols-2 items-center gap-y-12 sm:gap-y-14 lg:mx-0 lg:max-w-none lg:pl-8">
-            <Image
-              alt="Tuple"
-              src="https://tailwindui.com/plus-assets/img/logos/tuple-logo-gray-900.svg"
-              width={105}
-              height={48}
-              quality={80}
-              loading="lazy"
-              className="max-h-12 w-full object-contain object-left"
-            />
-            <Image
-              alt="Reform"
-              src="https://tailwindui.com/plus-assets/img/logos/reform-logo-gray-900.svg"
-              width={104}
-              height={48}
-              quality={80}
-              loading="lazy"
-              className="max-h-12 w-full object-contain object-left"
-            />
-            <Image
-              alt="SavvyCal"
-              src="https://tailwindui.com/plus-assets/img/logos/savvycal-logo-gray-900.svg"
-              width={140}
-              height={48}
-              quality={80}
-              loading="lazy"
-              className="max-h-12 w-full object-contain object-left"
-            />
-            <Image
-              alt="Laravel"
-              src="https://tailwindui.com/plus-assets/img/logos/laravel-logo-gray-900.svg"
-              width={136}
-              height={48}
-              quality={80}
-              loading="lazy"
-              className="max-h-12 w-full object-contain object-left"
-            />
-            <Image
-              alt="Transistor"
-              src="https://tailwindui.com/plus-assets/img/logos/transistor-logo-gray-900.svg"
-              width={158}
-              height={48}
-              quality={80}
-              loading="lazy"
-              className="max-h-12 w-full object-contain object-left"
-            />
-            <Image
-              alt="Statamic"
-              src="https://tailwindui.com/plus-assets/img/logos/statamic-logo-gray-900.svg"
-              width={147}
-              height={48}
-              quality={80}
-              loading="lazy"
-              className="max-h-12 w-full object-contain object-left"
-            />
-          </div>
+    <section className="bg-white py-14 border-y border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-400 mb-10">
+          Trusted Partners & Suppliers
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-10 lg:gap-16">
+          {partners.map((partner) => (
+            <div
+              key={partner.name}
+              className="text-gray-300 hover:text-[#f5a523] transition-colors duration-300 cursor-default"
+              title={partner.name}
+            >
+              {partner.svg}
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

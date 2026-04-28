@@ -1,253 +1,183 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Pacifico } from "next/font/google";
-import useSubscribe from "../hooks/useSubscribe";
-import { FaFacebook, FaLinkedin } from "react-icons/fa";
+import Link from "next/link";
+import Image from "next/image";
+import { FaTwitter, FaFacebook, FaInstagram, FaPinterest } from "react-icons/fa";
 
-const pacifico = Pacifico({
-  subsets: ["latin", "cyrillic"],
-  weight: ["400"],
-  style: ["normal"],
-  display: "swap",
-});
+const exploreLinks = [
+  { name: "About Company", href: "/" },
+  { name: "Meet the Team", href: "/team" },
+  { name: "News & Articles", href: "/blog" },
+  { name: "Our Services", href: "/services" },
+  { name: "Contact Us", href: "/contact" },
+];
 
-const navigation = {
-  solutions: [
-    { name: "Marketing", href: "#" },
-    { name: "Analytics", href: "#" },
-    { name: "Automation", href: "#" },
-    { name: "Commerce", href: "#" },
-    { name: "Insights", href: "#" },
-  ],
-  support: [
-    { name: "Submit ticket", href: "#" },
-    { name: "Documentation", href: "#" },
-    { name: "Guides", href: "#" },
-  ],
-  company: [
-    { name: "About", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "Jobs", href: "#" },
-    { name: "Press", href: "#" },
-  ],
-  legal: [
-    { name: "Terms of service", href: "#" },
-    { name: "Privacy policy", href: "#" },
-    { name: "License", href: "#" },
-  ],
-  social: [
-    {
-      name: "Facebook",
-      href: "https://www.facebook.com/example",
-      icon: FaFacebook,
-      target: "_blank",
-      rel: "noopener noreferrer",
-    },
-    {
-      name: "LinkedIn",
-      href: "https://www.linkedin.com/example",
-      icon: FaLinkedin,
-      target: "_blank",
-      rel: "noopener noreferrer",
-    },
-  ],
-};
+const serviceLinks = [
+  { name: "Industrial Robotics", href: "/services" },
+  { name: "Building Automation", href: "/services" },
+  { name: "UV Disinfection", href: "/services" },
+  { name: "Process Control", href: "/services" },
+  { name: "System Integration", href: "/services" },
+];
 
 export default function Footer() {
   const [year, setYear] = useState(new Date().getFullYear());
-  const [email, setEmail] = useState("");
-  const { subscribe, loading } = useSubscribe();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await subscribe(email, () => setEmail(""));
-  };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const currentYear = new Date().getFullYear();
-      if (currentYear !== year) {
-        setYear(currentYear);
-      }
+      const current = new Date().getFullYear();
+      if (current !== year) setYear(current);
     }, 1000 * 60 * 60);
-
     return () => clearInterval(interval);
   }, [year]);
 
   return (
-    <footer className="relative bg-white border border-t-[#eaeaea]">
-      <div className="absolute right-0 top-0 bottom-0 z-10 w-1/3 h-full flex items-center justify-center pointer-events-none">
-        <svg
-          className="absolute w-full h-full opacity-80 hidden md:block sm:viewBox-[-150_0_500_1000] md:viewBox-[-150_0_500_800] lg:viewBox-[0_0_500_800]"
-          viewBox="0 0 500 800"
-          fill="none"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M80 0 C160 150, 340 250, 420 400 S480 600, 350 800"
-            stroke="#129160"
-            strokeWidth="1.5"
-            fill="none"
-          />
-          <path
-            d="M140 0 C180 170, 320 270, 440 420 S500 650, 320 800"
-            stroke="#129160"
-            strokeWidth="1.2"
-            opacity="0.8"
-            fill="none"
-          />
-          <path
-            d="M200 0 C200 190, 300 290, 460 440 S520 700, 290 800"
-            stroke="#129160"
-            strokeWidth="1"
-            opacity="0.6"
-            fill="none"
-          />
-        </svg>
-      </div>
-      <div className="mx-auto max-w-7xl px-6 pt-16 pb-8 sm:pt-24 lg:px-8 lg:pt-32">
-        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-          <div>
-            <img alt="" src="/next-level-logo.png" width={180} height={40} />
-          </div>
-          <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                <h3 className="text-sm/6 font-semibold text-gray-900">
-                  Solutions
-                </h3>
-                <ul role="list" className="mt-6 space-y-4">
-                  {navigation.solutions.map((item) => (
-                    <li key={item.name}>
-                      <a
-                        href={item.href}
-                        className="text-sm/6 text-gray-600 hover:text-gray-900"
-                      >
-                        {item.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mt-10 md:mt-0">
-                <h3 className="text-sm/6 font-semibold text-gray-900">
-                  Support
-                </h3>
-                <ul role="list" className="mt-6 space-y-4">
-                  {navigation.support.map((item) => (
-                    <li key={item.name}>
-                      <a
-                        href={item.href}
-                        className="text-sm/6 text-gray-600 hover:text-gray-900"
-                      >
-                        {item.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                <h3 className="text-sm/6 font-semibold text-gray-900">
-                  Company
-                </h3>
-                <ul role="list" className="mt-6 space-y-4">
-                  {navigation.company.map((item) => (
-                    <li key={item.name}>
-                      <a
-                        href={item.href}
-                        className="text-sm/6 text-gray-600 hover:text-gray-900"
-                      >
-                        {item.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mt-10 md:mt-0">
-                <h3 className="text-sm/6 font-semibold text-gray-900">Legal</h3>
-                <ul role="list" className="mt-6 space-y-4">
-                  {navigation.legal.map((item) => (
-                    <li key={item.name}>
-                      <a
-                        href={item.href}
-                        className="text-sm/6 text-gray-600 hover:text-gray-900"
-                      >
-                        {item.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="mt-16 border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24 lg:flex lg:items-center lg:justify-between">
-          <div>
-            <h3 className="text-sm/6 font-semibold text-gray-900">
-              Абонирайте се за нашия бюлетин
-            </h3>
-            <p className="mt-2 text-sm/6 text-gray-600">
-              Получавайте ценни съвети, анализи и актуални новини директно във
-              вашата поща.
+    <footer className="bg-[#1d2228] text-gray-400">
+      {/* ── MAIN FOOTER CONTENT ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+
+          {/* Brand column */}
+          <div className="lg:col-span-1">
+            <Link href="/" className="inline-block mb-5">
+              <Image
+                src="/FlexaLuxe-logo.svg"
+                alt="FlexaLuxe"
+                width={160}
+                height={36}
+                className="h-9 w-auto brightness-0 invert"
+              />
+            </Link>
+            <p className="text-gray-400 text-sm leading-relaxed mb-6">
+              Flexa-luxe s.r.o. is an international company based in Prague, specializing in advanced technological solutions for the industrial sector across Europe.
             </p>
-          </div>
-          {loading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-opacity-50 z-10 pointer-events-none">
-              <div className="w-12 h-12 border-4 border-gray-400 border-t-[#129160] rounded-full animate-spin"></div>
-            </div>
-          )}
-          <form
-            onSubmit={handleSubmit}
-            className={`mt-6 sm:flex sm:max-w-md lg:mt-0 ${
-              loading ? "opacity-50 pointer-events-none" : ""
-            }`}
-          >
-            <label htmlFor="email-address" className="sr-only">
-              Email address
-            </label>
-            <input
-              id="email-address"
-              name="email-address"
-              type="email"
-              required
-              placeholder="Въведете Вашия имейл"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full min-w-0 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:w-56 sm:text-sm/6"
-            />
-            <div className="mt-4 sm:mt-0 sm:ml-4 sm:shrink-0">
-              <button
-                type="submit"
-                className="flex w-full items-center justify-center rounded-md bg-[#129160] hover:bg-gray-300 cursor-pointer hover:text-[#000000] px-3 py-2 text-sm font-semibold text-black shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Абонирайте се
-              </button>
-            </div>
-          </form>
-        </div>
-        <div className="mt-8 border-t border-gray-900/10 pt-8 md:flex md:items-center md:justify-between">
-          <div className="flex gap-x-6 md:order-2">
-            {navigation.social.map((item) => (
+            <div className="flex items-center gap-3">
               <a
-                key={item.name}
-                href={item.href}
-                target={item.target}
-                rel={item.rel}
-                className="text-gray-600 hover:text-gray-800"
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:bg-[#f5a523] hover:text-white transition-colors"
               >
-                <span className="sr-only">{item.name}</span>
-                <item.icon aria-hidden="true" className="size-6" />
+                <FaTwitter size={13} />
               </a>
-            ))}
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:bg-[#f5a523] hover:text-white transition-colors"
+              >
+                <FaFacebook size={13} />
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:bg-[#f5a523] hover:text-white transition-colors"
+              >
+                <FaInstagram size={13} />
+              </a>
+              <a
+                href="https://pinterest.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:bg-[#f5a523] hover:text-white transition-colors"
+              >
+                <FaPinterest size={13} />
+              </a>
+            </div>
           </div>
-          <p className="mt-8 text-sm/6 text-gray-600 md:order-1 md:mt-0">
-            &copy; {year} NextLevel Theme, Inc. All rights reserved.
+
+          {/* Explore links */}
+          <div>
+            <h4 className="text-white font-bold text-sm uppercase tracking-widest mb-5 pb-2 border-b border-white/10">
+              Explore
+            </h4>
+            <ul className="space-y-3">
+              {exploreLinks.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-gray-400 text-sm hover:text-[#f5a523] transition-colors flex items-center gap-2 group"
+                  >
+                    <svg className="w-3 h-3 text-[#f5a523] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact column */}
+          <div>
+            <h4 className="text-white font-bold text-sm uppercase tracking-widest mb-5 pb-2 border-b border-white/10">
+              Contact
+            </h4>
+            <ul className="space-y-4 text-sm">
+              <li className="flex items-start gap-3">
+                <svg className="w-4 h-4 text-[#f5a523] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+                <span className="leading-relaxed">
+                  Korunní 2569/108, Vinohrady<br />
+                  101 00 Prague 10, Czech Republic
+                </span>
+              </li>
+              <li className="flex items-center gap-3">
+                <svg className="w-4 h-4 text-[#f5a523] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+                <a href="mailto:info@flexa-luxe.com" className="hover:text-[#f5a523] transition-colors">
+                  info@flexa-luxe.com
+                </a>
+              </li>
+              <li className="flex items-center gap-3">
+                <svg className="w-4 h-4 text-[#f5a523] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
+                </svg>
+                <span>Reg. No.: 216 91 622</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Service links */}
+          <div>
+            <h4 className="text-white font-bold text-sm uppercase tracking-widest mb-5 pb-2 border-b border-white/10">
+              Service Link
+            </h4>
+            <ul className="space-y-3">
+              {serviceLinks.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-gray-400 text-sm hover:text-[#f5a523] transition-colors flex items-center gap-2 group"
+                  >
+                    <svg className="w-3 h-3 text-[#f5a523] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* ── BOTTOM BAR ── */}
+      <div className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-gray-500 text-xs">
+            &copy; {year} Flexa-luxe s.r.o. — Reg. No. 216 91 622. All rights reserved.
           </p>
+          <div className="flex items-center gap-4 text-xs text-gray-500">
+            <Link href="/privacy-policy" className="hover:text-[#f5a523] transition-colors">
+              Privacy Policy
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

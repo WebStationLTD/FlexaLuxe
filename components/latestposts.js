@@ -5,133 +5,139 @@ import { getLatestPosts } from "../services/posts";
 import Link from "next/link";
 import Image from "next/image";
 
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return {
+    day: d.getDate(),
+    month: d.toLocaleString("en-US", { month: "short" }).toUpperCase(),
+  };
+}
+
 export default function LatestPosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch latests posts from WordPress API on component mount
   useEffect(() => {
-    setLoading(true);
-    const fetchLatestPosts = async () => {
-      const postsData = await getLatestPosts();
-      setPosts(postsData);
+    getLatestPosts().then((data) => {
+      setPosts(data || []);
       setLoading(false);
-    };
-
-    fetchLatestPosts();
+    });
   }, []);
 
   return (
-    <div className="bg-white">
-      <div className="mx-auto w-full py-0 sm:px-6 sm:py-0 lg:px-0">
-        <div className="relative isolate overflow-hidden bg-gray-900 px-6 py-24 text-center shadow-2xl sm:px-16">
-          <h3 className="text-4xl text-white">Последни новини</h3>
-          {/* Loader */}
-          {loading && (
-            <div className="flex justify-center mt-10">
-              <div className="w-12 h-12 border-4 border-gray-500 border-t-[#129160] rounded-full animate-spin"></div>
-            </div>
-          )}
+    <section className="bg-white py-20 lg:py-28">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-14">
+          <p className="text-[#f5a523] font-semibold text-sm uppercase tracking-widest mb-3 flex items-center justify-center gap-2">
+            <span className="inline-block w-8 h-0.5 bg-[#f5a523]"></span>
+            From the Blog
+            <span className="inline-block w-8 h-0.5 bg-[#f5a523]"></span>
+          </p>
+          <h2 className="text-3xl lg:text-4xl font-bold text-[#1d2228]">
+            News &amp; Articles
+          </h2>
+        </div>
 
-          {!loading && (
-            <div className="mx-auto mt-16 grid !max-w-[80%] grid-cols-1 gap-x-8 gap-y-20 lg:mx-auto lg:max-w-none lg:grid-cols-3">
-              {posts.length > 0 ? (
-                posts.map((post, index) => (
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    key={post.id}
-                    prefetch={true}
-                  >
-                    <article className="flex flex-col items-start justify-between">
-                      <div className="relative w-full">
+        {/* Loader */}
+        {loading && (
+          <div className="flex justify-center py-16">
+            <div className="w-10 h-10 border-3 border-gray-200 border-t-[#f5a523] rounded-full animate-spin"></div>
+          </div>
+        )}
+
+        {!loading && (
+          <>
+            {posts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {posts.slice(0, 3).map((post, index) => {
+                  const { day, month } = formatDate(post.date);
+                  const imageUrl =
+                    post.yoast_head_json?.og_image?.[0]?.url || "/hero-image-desktop.jpg";
+                  const excerpt = post.content?.rendered
+                    ? post.content.rendered.replace(/<\/?[^>]+(>|$)/g, "").substring(0, 120) + "..."
+                    : "Read the full article on our blog.";
+                  const author = post.yoast_head_json?.author || "FlexaLuxe";
+                  const category =
+                    post.yoast_head_json?.schema?.["@graph"]?.find(
+                      (g) => g["@type"] === "Article"
+                    )?.articleSection?.[0] || "Industry";
+
+                  return (
+                    <article
+                      key={post.id}
+                      className="group bg-white border border-gray-100 rounded-sm overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300"
+                    >
+                      {/* Image with date badge */}
+                      <div className="relative overflow-hidden h-52">
                         <Image
+                          src={imageUrl}
+                          alt={post.title?.rendered || "Blog post"}
                           width={400}
-                          height={225}
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          quality={85}
-                          priority={index === 0}
+                          height={208}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           loading={index === 0 ? "eager" : "lazy"}
-                          alt={post.title.rendered || "Публикация"}
-                          src={
-                            post.yoast_head_json?.og_image?.[0]?.url ||
-                            "/placeholder.webp"
-                          }
-                          className="aspect-video w-full rounded-2xl bg-gray-100 object-cover sm:aspect-2/1 lg:aspect-3/2"
-                          format="webp"
                         />
-                        <div className="absolute inset-0 rounded-2xl ring-1 ring-gray-900/10 ring-inset" />
+                        {/* Date badge */}
+                        <div className="absolute top-4 right-4 bg-[#f5a523] text-white text-center px-3 py-2 rounded-sm min-w-[48px]">
+                          <p className="text-lg font-bold leading-none">{day}</p>
+                          <p className="text-[10px] font-semibold uppercase">{month}</p>
+                        </div>
                       </div>
-                      <div className="max-w-xl">
-                        <div className="mt-8 flex items-center gap-x-4 text-xs">
-                          <time dateTime={post.date} className="text-white">
-                            {new Date(post.date).toLocaleDateString()}
-                          </time>
+
+                      {/* Content */}
+                      <div className="p-6">
+                        {/* Meta */}
+                        <div className="flex items-center gap-3 mb-3 text-xs text-gray-400">
+                          <span className="flex items-center gap-1">
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            By {author}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                            </svg>
+                            {category}
+                          </span>
                         </div>
-                        <div className="group relative text-left">
-                          <h3 className="mt-3 text-lg/6 font-semibold text-white group-hover:text-gray-300">
-                            <span className="absolute inset-0" />
-                            {post.title.rendered}
-                          </h3>
-                          <p className="mt-5 line-clamp-3 text-sm/6 text-white">
-                            {post.content.rendered
-                              ? post.content.rendered
-                                  .replace(/<\/?[^>]+(>|$)/g, "")
-                                  .substring(0, 150) + "..."
-                              : "No description available"}
-                          </p>
-                        </div>
-                        <div className="relative mt-8 flex items-center gap-x-4">
-                          <Image
-                            width={40}
-                            height={40}
-                            quality={80}
-                            loading="lazy"
-                            alt="Автор"
-                            src={
-                              post.yoast_head_json?.schema?.["@graph"]?.find(
-                                (person) => person["@type"] === "Person"
-                              )?.image?.url || "/placeholder.webp"
-                            }
-                            className="size-10 rounded-full bg-gray-100"
-                            format="webp"
-                          />
-                          <div className="text-sm/6 text-left">
-                            <p className="font-semibold text-white">
-                              {post.yoast_head_json?.author || "Unknown Author"}
-                            </p>
-                            <p className="text-white">Author</p>
-                          </div>
-                        </div>
+
+                        {/* Title */}
+                        <h3 className="text-base font-bold text-[#1d2228] mb-3 leading-snug group-hover:text-[#f5a523] transition-colors line-clamp-2">
+                          <Link href={`/blog/${post.slug}`} className="hover:text-[#f5a523]">
+                            {post.title?.rendered}
+                          </Link>
+                        </h3>
+
+                        {/* Excerpt */}
+                        <p className="text-gray-400 text-xs leading-relaxed mb-5 line-clamp-3">
+                          {excerpt}
+                        </p>
+
+                        {/* Read more */}
+                        <Link
+                          href={`/blog/${post.slug}`}
+                          className="inline-flex items-center gap-2 text-[#f5a523] font-semibold text-xs hover:gap-3 transition-all duration-200 uppercase tracking-wide border-t border-gray-100 pt-4 w-full"
+                        >
+                          View Details
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          </svg>
+                        </Link>
                       </div>
                     </article>
-                  </Link>
-                ))
-              ) : (
-                <p className="text-gray-600">No posts found.</p>
-              )}
-            </div>
-          )}
-          <svg
-            viewBox="0 0 1024 1024"
-            aria-hidden="true"
-            className="absolute -left-20 -bottom-140 -z-10 size-[64rem] -translate-x-1/2 [mask-image:radial-gradient(closest-side,white,transparent)]"
-          >
-            <circle
-              r={512}
-              cx={512}
-              cy={512}
-              fill="url(#827591b1-ce8c-4110-b064-7cb85a0b1217)"
-              fillOpacity="0.7"
-            />
-            <defs>
-              <radialGradient id="827591b1-ce8c-4110-b064-7cb85a0b1217">
-                <stop stopColor="#129160" />
-                <stop offset={1} stopColor="#129160" />
-              </radialGradient>
-            </defs>
-          </svg>
-        </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-gray-400">No articles found. Check back soon.</p>
+              </div>
+            )}
+          </>
+        )}
       </div>
-    </div>
+    </section>
   );
 }
